@@ -6,23 +6,22 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-model user {
+model User {
   id               Int       @id @default(autoincrement())
   name             String
   phone            String
   email            String    @unique
   password         String
-  user_type        UserType
   created_at       DateTime  @default(now())
   updated_at       DateTime  @updatedAt
-  Home             Home[]
+  user_type        UserType
+  homes            Home[]
+  buyer_messages   Message[] @relation("buyer_messages")
   realtor_messages Message[] @relation("realtor_messages")
-  Message          Message[]
-  Message          Message[]
 }
 
 model Home {
@@ -35,12 +34,12 @@ model Home {
   price               Float
   land_size           Float
   propertyType        PropertyType
-  realtor_id          Int
-  realtor             user         @relation(fields: [realtor_id], references: [id])
   created_at          DateTime     @default(now())
   updated_at          DateTime     @updatedAt
-  Image               Image[]
-  Message             Message[]
+  images              Image[]
+  realtor_id          Int
+  realtor             User         @relation(fields: [realtor_id], references: [id])
+  messages            Message[]
 }
 
 model Image {
@@ -53,17 +52,14 @@ model Image {
 }
 
 model Message {
-  id         Int      @id @default(autoincrement())
+  id         Int    @id @default(autoincrement())
   message    String
   home_id    Int
-  home       Home     @relation(fields: [home_id], references: [id])
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  home       Home   @relation(fields: [home_id], references: [id])
   realtor_id Int
-  realtor    user     @relation(fields: [realtor_id], references: [id])
-  user       user?    @relation(fields: [userId], references: [id])
-  userId     Int?
-  user       user?    @relation(fields: [userId], references: [id])
+  realtor    User   @relation("buyer_messages", fields: [realtor_id], references: [id])
+  buyer_id   Int
+  buyer      User   @relation("realtor_messages", fields: [buyer_id], references: [id])
 }
 
 enum PropertyType {
