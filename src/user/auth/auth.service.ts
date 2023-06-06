@@ -38,25 +38,18 @@ export class AuthService {
                 phone,
                 user_type : UserType.BUYER
             }
-        }) 
+        })
 
-        const token = jwt.sign(
-            {
-                name,
-                id : user.id
-            },
-            process.env.JWT_SECRET_KEY,
-            {
-                expiresIn : 360000
-            }
-        )
+        const token = this.generateJWT(user.name, user.id);
 
-        return { token }      
+        return {token}
 
     }
 
     signIn = async (
-        {email, password} : SignInParams
+
+        { email, password } : SignInParams
+
     ) => {
         const user = await this.prismaService.user.findUnique({
             where : {
@@ -74,20 +67,14 @@ export class AuthService {
             throw new HttpException('Invalid credentials', 400);
         }
 
+        const token = this.generateJWT(user.name, user.id);    
 
-        const token = jwt.sign(
-            {
-                name : user.name,
-                id : user.id
-            },
-            process.env.JWT_SECRET_KEY,
-            {
-                expiresIn : 360000
-            }
-        )
-
-        return { token } 
+        return {token}
 
     }    
 
+    generateProductKey = (email:string, userType : UserType) => bcrypt.hash(`${email}-${userType}-${process.env.PRODUCT_KEY_SECRET}`, 10) ;
+
+    private generateJWT = (name : string, id : number) : string => jwt.sign({name,id},process.env.JWT_SECRET_KEY, {expiresIn : 360000}) ;
+        
 }
