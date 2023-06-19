@@ -6,44 +6,50 @@ export class HomeResponseDto {
     address: string;
     
     @Exclude()
+    number_of_bedrooms: number;
+
     @Expose({name : 'numberOfBadrooms'})
     numberOfBadrooms = () => {
         return this.number_of_bathrooms
     }
-    number_of_bedrooms: number;
 
     @Exclude()
+    number_of_bathrooms: number;
+
     @Expose({name : 'numberOfBathrooms'})
     numberOfBathrooms = () => {
         return this.number_of_bathrooms
     }
-    number_of_bathrooms: number;
 
-    city: string ;
+    city: string;
+
+    image : string;
 
     @Exclude()
+    listed_date: Date;
+
     @Expose({name : 'listedDate'})
     listedDate = () => {
         return this.listed_date
     }
-    listed_date: Date;
 
     price: number;
 
     @Exclude()
+    land_size: number;
+    
     @Expose({name : 'landSize'})
     landSize = () => {
         return this.land_size
     }
-    land_size: number;
 
     propertyType: PropertyType;
 
     @Exclude()
-    created_at: number;
+    created_at: Date;
     
     @Exclude()
-    updated_at: number;
+    updated_at: Date;
 
     @Exclude()
     realtor_id: number

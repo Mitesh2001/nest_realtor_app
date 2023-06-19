@@ -1,6 +1,7 @@
-import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import { Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
 import { HomeService } from './home.service';
 import { HomeResponseDto } from './dto/home.dto';
+import { PropertyType } from '@prisma/client';
 
 @Controller('home')
 export class HomeController {
@@ -8,13 +9,30 @@ export class HomeController {
     constructor(private homeService : HomeService){}
 
     @Get()
-    getHomes() : Promise<HomeResponseDto[]> {
-        return this.homeService.getAllHomes();
+    getHomes(
+        @Query('city') city? : string,
+        @Query('minPrice') minPrice? : string,
+        @Query('maxPrice') maxPrice? : string,
+        @Query('propertyType') propertyType? : PropertyType,
+    ) : Promise<HomeResponseDto[]> {                  
+
+        const filters = {
+            ...(city && {city}),
+            price : {
+
+                ...(minPrice && {gte : parseFloat(minPrice)}),
+                ...(maxPrice && {lte : parseFloat(maxPrice)})
+
+            },
+            ...(propertyType && {propertyType})
+        }
+        
+        return this.homeService.getAllHomes(filters);
     }
 
     @Get(":id")
-    getHomeById(){
-        return {}
+    getHomeById(@Param('id',ParseIntPipe) id : number) : Promise<HomeResponseDto> {
+        return this.homeService.getHomeById(id)
     }    
 
     @Post()

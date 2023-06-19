@@ -9,8 +9,6 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 @Module({
   imports: [UserModule, PrismaModule, HomeModule],
   controllers: [AppController],
-  providers: [AppService,{
-    provide: APP_INTERCEPTOR,
-  }]
+  providers: [AppService]
 })
 export class AppModule {}
